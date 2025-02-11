@@ -2,9 +2,10 @@
 
 # Configuration functions for OpenSlides
 
+INSTALL_DIR=${INSTALL_DIR:-/opt/openslides}
+
 # Log directory and file location
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
-LOG_DIR="$SCRIPT_DIR/logs"
+LOG_DIR="$INSTALL_DIR/logs"
 LOG_FILE="$LOG_DIR/configuration_utils.log"
 
 # Ensure log directory exists
@@ -23,7 +24,7 @@ log() {
 # Function to configure external access
 configure_external_access() {
   log "INFO" "Configuring external access..."
-  local compose_file="/opt/openslides/docker-compose.yml"
+  local compose_file="$INSTALL_DIR/docker-compose.yml"
   if [ ! -f "$compose_file" ]; then
     log "ERROR" "Docker Compose file not found at $compose_file."
     exit 1
@@ -40,7 +41,7 @@ configure_external_access() {
 # Function to configure HTTPS
 configure_https() {
   log "INFO" "Configuring HTTPS..."
-  local compose_file="/opt/openslides/docker-compose.yml"
+  local compose_file="$INSTALL_DIR/docker-compose.yml"
   if [ ! -f "$compose_file" ]; then
     log "ERROR" "Docker Compose file not found at $compose_file."
     exit 1
@@ -65,7 +66,7 @@ configure_https() {
 # Function to configure email
 configure_email() {
   log "INFO" "Configuring email settings..."
-  local compose_file="/opt/openslides/docker-compose.yml"
+  local compose_file="$INSTALL_DIR/docker-compose.yml"
   if [ ! -f "$compose_file" ]; then
     log "ERROR" "Docker Compose file not found at $compose_file."
     exit 1

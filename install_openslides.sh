@@ -20,6 +20,32 @@ while getopts ":df" opt; do
   esac
 done
 
+# Level 1: Installation Directory Selection
+echo "Choose installation directory:"
+echo "1) Default (/opt/openslides)"
+echo "2) Custom directory"
+echo "3) Script execution directory appended with /openslides"
+read -rp "Enter your choice (1-3): " dir_choice
+case $dir_choice in
+    1)
+        INSTALL_DIR="/opt/openslides"
+        ;;
+    2)
+        read -rp "Enter custom installation directory: " custom_dir
+        INSTALL_DIR="$custom_dir"
+        ;;
+    3)
+        SCRIPT_EXEC_DIR=$(dirname "$(realpath "$0")")
+        INSTALL_DIR="$SCRIPT_EXEC_DIR/openslides"
+        ;;
+    *)
+        echo "Invalid choice. Using default (/opt/openslides)."
+        INSTALL_DIR="/opt/openslides"
+        ;;
+esac
+export INSTALL_DIR
+echo "Installation directory set to: $INSTALL_DIR"
+
 # Log directory and file location
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 LOG_DIR="$SCRIPT_DIR/logs"

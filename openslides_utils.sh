@@ -2,9 +2,10 @@
 
 # OpenSlides utility functions
 
+INSTALL_DIR=${INSTALL_DIR:-/opt/openslides}
+
 # Log directory and file location
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
-LOG_DIR="$SCRIPT_DIR/logs"
+LOG_DIR="$INSTALL_DIR/logs"
 LOG_FILE="$LOG_DIR/openslides_utils.log"
 
 # Ensure log directory exists
@@ -25,8 +26,8 @@ install_openslides() {
   log "INFO" "Starting OpenSlides installation..."
   setup_openslides
   initialize_openslides
-  pull_docker_images /opt/openslides/docker-compose.yml
-  start_docker_services /opt/openslides/docker-compose.yml
+  pull_docker_images "$INSTALL_DIR/docker-compose.yml"
+  start_docker_services "$INSTALL_DIR/docker-compose.yml"
   check_openslides_server
   create_initial_data
   log "INFO" "OpenSlides installation completed successfully."
@@ -43,13 +44,13 @@ diagnose_openslides() {
 # Function to back up OpenSlides data
 backup_openslides_data() {
   log "INFO" "Backing up OpenSlides data..."
-  local backup_dir="/opt/openslides_backup_$(date +%Y%m%d%H%M%S)"
+  local backup_dir="$INSTALL_DIR/backup_$(date +%Y%m%d%H%M%S)"
   mkdir -p "$backup_dir" || {
     log "ERROR" "Failed to create backup directory."
     exit 1
   }
 
-  cp -r /opt/openslides/* "$backup_dir" || {
+  cp -r "$INSTALL_DIR/*" "$backup_dir" || {
     log "ERROR" "Failed to back up OpenSlides data."
     exit 1
   }
@@ -60,16 +61,16 @@ backup_openslides_data() {
 # Function to upgrade OpenSlides
 upgrade_openslides() {
   log "INFO" "Upgrading OpenSlides..."
-  pull_docker_images /opt/openslides/docker-compose.yml
-  recreate_docker_services /opt/openslides/docker-compose.yml
+  pull_docker_images "$INSTALL_DIR/docker-compose.yml"
+  recreate_docker_services "$INSTALL_DIR/docker-compose.yml"
   log "INFO" "OpenSlides upgraded successfully."
 }
 
 # Function to remove OpenSlides
 remove_openslides() {
   log "INFO" "Removing OpenSlides..."
-  stop_docker_services /opt/openslides/docker-compose.yml
-  rm -rf /opt/openslides || {
+  stop_docker_services "$INSTALL_DIR/docker-compose.yml"
+  rm -rf "$INSTALL_DIR" || {
     log "ERROR" "Failed to remove OpenSlides files."
     exit 1
   }
@@ -79,6 +80,6 @@ remove_openslides() {
 # Function to recreate OpenSlides instances
 recreate_instances() {
   log "INFO" "Recreating OpenSlides instances..."
-  recreate_docker_services /opt/openslides/docker-compose.yml
+  recreate_docker_services "$INSTALL_DIR/docker-compose.yml"
   log "INFO" "OpenSlides instances recreated successfully."
 }

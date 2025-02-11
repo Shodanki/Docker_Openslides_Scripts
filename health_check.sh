@@ -2,9 +2,10 @@
 
 # Health check and common problem fixes for OpenSlides
 
+INSTALL_DIR=${INSTALL_DIR:-/opt/openslides}
+
 # Log directory and file location
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
-LOG_DIR="$SCRIPT_DIR/logs"
+LOG_DIR="$INSTALL_DIR/logs"
 LOG_FILE="$LOG_DIR/health_check.log"
 
 # Ensure log directory exists
@@ -23,7 +24,7 @@ log() {
 # Function to check OpenSlides server health
 check_openslides_health() {
   log "INFO" "Checking OpenSlides server health..."
-  /opt/openslides/openslides check-server || {
+  "$INSTALL_DIR/openslides" check-server || {
     log "ERROR" "OpenSlides server check failed."
     return 1
   }
@@ -35,17 +36,17 @@ check_common_problems() {
   log "INFO" "Checking for common problems..."
 
   # Check if secrets/manage_auth_password exists
-  if [ ! -f "/opt/openslides/secrets/manage_auth_password" ]; then
+  if [ ! -f "$INSTALL_DIR/secrets/manage_auth_password" ]; then
     log "WARN" "secrets/manage_auth_password file is missing. Creating it..."
-    mkdir -p /opt/openslides/secrets || {
+    mkdir -p "$INSTALL_DIR/secrets" || {
       log "ERROR" "Failed to create secrets directory."
       return 1
     }
-    openssl rand -base64 32 > /opt/openslides/secrets/manage_auth_password || {
+    openssl rand -base64 32 > "$INSTALL_DIR/secrets/manage_auth_password" || {
       log "ERROR" "Failed to create manage_auth_password file."
       return 1
     }
-    chmod 600 /opt/openslides/secrets/manage_auth_password || {
+    chmod 600 "$INSTALL_DIR/secrets/manage_auth_password" || {
       log "ERROR" "Failed to set permissions for manage_auth_password file."
       return 1
     }
@@ -82,17 +83,17 @@ fix_common_problems() {
   log "INFO" "Fixing common problems..."
 
   # Fix missing secrets/manage_auth_password
-  if [ ! -f "/opt/openslides/secrets/manage_auth_password" ]; then
+  if [ ! -f "$INSTALL_DIR/secrets/manage_auth_password" ]; then
     log "INFO" "Creating manage_auth_password file..."
-    mkdir -p /opt/openslides/secrets || {
+    mkdir -p "$INSTALL_DIR/secrets" || {
       log "ERROR" "Failed to create secrets directory."
       return 1
     }
-    openssl rand -base64 32 > /opt/openslides/secrets/manage_auth_password || {
+    openssl rand -base64 32 > "$INSTALL_DIR/secrets/manage_auth_password" || {
       log "ERROR" "Failed to create manage_auth_password file."
       return 1
     }
-    chmod 600 /opt/openslides/secrets/manage_auth_password || {
+    chmod 600 "$INSTALL_DIR/secrets/manage_auth_password" || {
       log "ERROR" "Failed to set permissions for manage_auth_password file."
       return 1
     }

@@ -2,9 +2,10 @@
 
 # Core setup functions for OpenSlides
 
+INSTALL_DIR=${INSTALL_DIR:-/opt/openslides}
+
 # Log directory and file location
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
-LOG_DIR="$SCRIPT_DIR/logs"
+LOG_DIR="$INSTALL_DIR/logs"
 LOG_FILE="$LOG_DIR/core_setup.log"
 
 # Ensure log directory exists
@@ -23,16 +24,16 @@ log() {
 # Function to set up OpenSlides
 setup_openslides() {
   log "INFO" "Setting up OpenSlides..."
-  if [ ! -f "/opt/openslides/openslides" ]; then
-    mkdir -p /opt/openslides || {
-      log "ERROR" "Failed to create /opt/openslides directory."
+  if [ ! -f "$INSTALL_DIR/openslides" ]; then
+    mkdir -p "$INSTALL_DIR" || {
+      log "ERROR" "Failed to create $INSTALL_DIR directory."
       exit 1
     }
-    wget -q https://github.com/OpenSlides/openslides-manage-service/releases/download/latest/openslides -O /opt/openslides/openslides || {
+    wget -q https://github.com/OpenSlides/openslides-manage-service/releases/download/latest/openslides -O "$INSTALL_DIR/openslides" || {
       log "ERROR" "Failed to download OpenSlides manage tool."
       exit 1
     }
-    chmod +x /opt/openslides/openslides || {
+    chmod +x "$INSTALL_DIR/openslides" || {
       log "ERROR" "Failed to make OpenSlides manage tool executable."
       exit 1
     }
@@ -45,7 +46,7 @@ setup_openslides() {
 # Function to initialize OpenSlides
 initialize_openslides() {
   log "INFO" "Initializing OpenSlides..."
-  /opt/openslides/openslides setup /opt/openslides || {
+  "$INSTALL_DIR/openslides" setup "$INSTALL_DIR" || {
     log "ERROR" "Failed to initialize OpenSlides."
     exit 1
   }
@@ -55,7 +56,7 @@ initialize_openslides() {
 # Function to check OpenSlides server
 check_openslides_server() {
   log "INFO" "Checking OpenSlides server..."
-  /opt/openslides/openslides check-server || {
+  "$INSTALL_DIR/openslides" check-server || {
     log "ERROR" "OpenSlides server check failed."
     exit 1
   }
@@ -65,7 +66,7 @@ check_openslides_server() {
 # Function to create initial OpenSlides data
 create_initial_data() {
   log "INFO" "Creating initial OpenSlides data..."
-  /opt/openslides/openslides initial-data || {
+  "$INSTALL_DIR/openslides" initial-data || {
     log "ERROR" "Failed to create initial OpenSlides data."
     exit 1
   }
